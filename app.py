@@ -13,7 +13,7 @@ from urllib.parse import urlparse
 
 # 1.2. Tải mô hình SVM đã được huấn luyện
 try:
-    # Đường dẫn đến file model ở trong thư mục root của project
+    # Đường dẫn đến file model, tương đối so với vị trí file app.py
     svm_pipeline = joblib.load("models/svm_pipeline.pkl")
     print("INFO: Tải mô hình SVM thành công.")
 except FileNotFoundError:
@@ -37,8 +37,7 @@ TRUSTED_ENTITIES = {
     'techcombank': 'techcombank.com', 'vietinbank': 'vietinbank.vn',
     'vietcombank': 'vietcombank.com.vn', 'agribank': 'agribank.com.vn',
     'mb bank': 'mbbank.com.vn', 'shopee': 'shopee.vn', 'lazada': 'lazada.vn',
-    'tiki': 'tiki.vn', 'facebook': 'facebook.com', 'fb': 'facebook.com',
-    'google': 'google.com', 'apple': 'apple.com'
+    'tiki': 'tiki.vn'
 }
 
 # ==============================================================================
@@ -48,13 +47,12 @@ TRUSTED_ENTITIES = {
 def get_domain_from_url(url):
     """Trích xuất tên miền chính từ một URL đầy đủ."""
     try:
-        # Thêm http:// nếu thiếu để urlparse hoạt động đúng
         if '://' not in url:
             url = 'http://' + url
         parsed_uri = urlparse(url)
         domain = "{uri.netloc}".format(uri=parsed_uri).replace('www.', '')
         parts = domain.split('.')
-        if len(parts) > 2 and parts[-2] in ['co', 'com', 'gov', 'org', 'vn']:
+        if len(parts) > 2 and parts[-2] in ['co', 'com', 'gov', 'org']:
             return '.'.join(parts[-3:])
         return '.'.join(parts[-2:])
     except:
@@ -63,9 +61,7 @@ def get_domain_from_url(url):
 def extract_features_from_text(text):
     """Trích xuất tất cả các đặc trưng cơ bản từ văn bản đầu vào."""
     lower_text = text.lower()
-    
     url_pattern = r'(?:(?:https?://|www\.)[a-zA-Z0-9./\-_?=&%]+|[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:/\S*)?)'
-
     return {
         'clean_texts': text,
         'has_money': int(bool(re.search(r'\b\d+(?:[.,]\d+)?\s*(?:k|nghìn|triệu|tỷ|đ|vnd|vnđ|\$|usd|€|eur)\b', lower_text))),
@@ -159,15 +155,22 @@ def clear_all():
 # SECTION 4: GIAO DIỆN NGƯỜI DÙNG (USER INTERFACE)
 # ==============================================================================
 
+# <<< CẬP NHẬT: Giao diện được đơn giản hóa để tải nhanh và ổn định hơn >>>
+
 with gr.Blocks(theme='soft') as demo:
-    gr.Markdown("# 🚨 ScamRadar: Phân Loại Tin Nhắn Lừa Đảo Trong Văn Bản Tiếng Việt")
+    gr.Markdown(
+        """
+        # 🚨 ScamRadar: Phân Loại Tin Nhắn Lừa Đảo
+        Dán nội dung tin nhắn đáng ngờ vào ô bên dưới và nhấn "Kiểm tra".
+        """
+    )
     
     with gr.Row():
         with gr.Column(scale=2):
             msg_input = gr.Textbox(
                 lines=8, 
                 label="Nội dung tin nhắn", 
-                placeholder="Nhập nội dung tiếng Việt cần kiểm tra ở đây..."
+                placeholder="Ví dụ: Chuc mung quy khach da nhan duoc qua..."
             )
             with gr.Row():
                 clear_btn = gr.Button("Xóa")
@@ -187,7 +190,7 @@ with gr.Blocks(theme='soft') as demo:
             ["Tai khoan SmartBanking cua ban da bi khoa. Vui long truy cap www.bidv-vn.xyz de mo khoa ngay."]
         ],
         inputs=msg_input,
-        label="Hoặc nhập những gợi ý dưới đây:"
+        label="Hoặc chọn một ví dụ có sẵn:"
     )
     
     # --- Event Handling ---
