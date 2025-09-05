@@ -26,9 +26,10 @@ URL_SHORTENER_DOMAINS = [
     'db.tt', 'qr.ae', 'ow.ly', 'buff.ly', 'adf.ly', 'tr.im'
 ]
 AUTHORITY_KEYWORDS = [
-    'chính phủ', 'thủ tướng', 'nhà nước', 'bộ công an', 'bộ quốc phòng', 
+    'chính phủ', 'thủ tướng', 'nhà nước', 'bộ công an', 'bộ quốc phòng', 'tổng đài quốc gia',
     'bộ y tế', 'bộ tài chính', 'vtv', 'vneid', 'an sinh xã hội', 'nghị quyết'
 ]
+
 TRUSTED_ENTITIES = {
     'vietnamobile': 'vietnamobile.com.vn', 'viettel': 'viettel.vn', 
     'viettelpay': 'viettel.vn', 'viettel money': 'viettel.vn', 
@@ -39,6 +40,8 @@ TRUSTED_ENTITIES = {
     'mb bank': 'mbbank.com.vn', 'shopee': 'shopee.vn', 'lazada': 'lazada.vn',
     'tiki': 'tiki.vn'
 }
+
+TRUSTED_PHONE_NUMBERS = ['111', '113', '114', '115']
 
 # ==============================================================================
 # SECTION 2: CÁC HÀM HỖ TRỢ (HELPER FUNCTIONS)
@@ -85,6 +88,13 @@ def analyze_special_cases(text, features):
             else: return {'case': 'BRAND_IMPERSONATION', 'has_shortener': has_shortener}
 
     is_authority = any(keyword in lower_text for keyword in AUTHORITY_KEYWORDS)
+
+    if is_authority and features['has_phone'] and not features ['has_url']:
+        phone_numbers_found = re.findall(r'\b\d{3,10}\b', lower_text)
+        # Nếu tất cả các số điện thoại được tìm thấy đều nằm trong danh sách an toàn
+        if phone_numbers_found and all(phone in TRUSTED_PHONE_NUMBERS for phone in phone_numbers_found):
+            return {'case': 'SAFE_ANNOUNCEMENT', 'has_shortener': has_shortener}
+
     risky_action = features['has_url'] or features['has_phone']
     if is_authority:
         return {'case': 'AUTHORITY_IMPERSONATION' if risky_action else 'SAFE_ANNOUNCEMENT', 'has_shortener': has_shortener}
@@ -134,7 +144,7 @@ def predict_text(message):
         elif case_info['has_shortener'] and final_prob < 0.5: final_prob = 0.5 + (prob_scam * 0.1)
 
         if final_prob > 0.85: label = "⚠️ Khả năng cao là lừa đảo"
-        elif final_prob > 0.5: label = "🤔 Có dấu hiệu đáng ngờ"
+        elif final_prob > 0.6: label = "🤔 Có dấu hiệu đáng ngờ"
         else: label = "✅ Chưa đủ dữ kiện để xác nhận lừa đảo"
         
         prob_details = f"Khả năng lừa đảo: {final_prob*100:.2f}%"
@@ -185,9 +195,10 @@ with gr.Blocks(theme='soft') as demo:
         examples=[
             ["Chuc mung quy khach da nhan duoc 1 luot mo tu chuong trinh SAC MAU HOA BINH RINH QUA QUOC KHANH . Vui long truy cap website https://quockhanh.vietnamobile.com.vn de nhan qua."],
             ["Chính phủ vừa ban hành Nghị quyết số 263/NQ-CP về việc tặng quà nhân dân nhân dịp kỷ niệm 80 năm Cách mạng tháng Tám và Quốc khánh 2.9."],
-            ["Con bạn đã bị tai nạn trên đường Trần Duy Hưng. Hãy chuyển cho Jack 5000000 VND để cứu con."],
+            ["Con bạn đã bị tai nạn trên đường Trần Duy Hưng. Hãy chuyển gấp cho tôi 5000000 VND để cứu con của bạn."],
             ["Chính phủ đã tặng cho bạn 100.000 đồng nhân dịp 2/9. Hãy đăng kí nhận qua đường link bit.ly/nhanqua29"],
-            ["Tai khoan SmartBanking cua ban da bi khoa. Vui long truy cap www.bidv-vn.xyz de mo khoa ngay."]
+            ["Tai khoan SmartBanking cua ban da bi khoa. Vui long truy cap www.bidv-vn.xyz de mo khoa ngay."],
+            ["Toàn dân tích cực tham gia phòng chống mua bán người. Khi phát hiện dấu hiệu liên quan đến mua bán người xin hãy báo ngay cho cơ quan Công an nơi gần nhất hoặc Tổng đài quốc gia 111."]
         ],
         inputs=msg_input,
         label="Hoặc chọn một ví dụ có sẵn:"
@@ -210,4 +221,4 @@ with gr.Blocks(theme='soft') as demo:
 # ==============================================================================
 
 if __name__ == "__main__":
-    demo.launch()
+    demo.launch(share=True)
