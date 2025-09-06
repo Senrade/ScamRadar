@@ -21,7 +21,7 @@ Try the application on Hugging Face Spaces:
 [ScamRadar on Hugging Face Spaces](https://huggingface.co/spaces/Senrade/scamradar)
 
 Or try this live demo link instead (if you cannot access, it means the link has expired):
-SScamRadaron live Gradio demo](https://a6710159ab3273af04.gradio.live/)
+[ScamRadaron live Gradio demo](https://a6710159ab3273af04.gradio.live/)
 
 ---
 
