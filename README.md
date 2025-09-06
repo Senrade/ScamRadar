@@ -69,12 +69,13 @@ graph TD
 
 ---
 
-## Tech stack
+## Tech Stack
 
-* **Backend & ML:** Python, scikit-learn, pandas
-* **Model serialization:** joblib (SVM pipeline)
-* **Web UI:** Gradio
-* **Deployment:** Hugging Face Spaces (Git & Git-LFS)
+- **ML & NLP:** scikit-learn, PyVi, Tfidf/Count Vectorizer  
+- **Data:** pandas, regex  
+- **Visualization:** matplotlib, seaborn  
+- **Model Handling:** joblib  
+- **UI & Deployment:** Gradio  
 
 ---
 
@@ -140,19 +141,19 @@ The app should be available at a local URL (e.g., `http://127.0.0.1:7860`) shown
 
 Potential enhancements to increase detection coverage and maintainability:
 
-- **Feature Engineering** — move to deep learning (e.g., PhoBERT) for better context understanding and fewer misclassifications.  
-- **External Services** — integrate **VirusTotal API** for URL reputation checks, extend explanations beyond rules.  
-- **Model Maintenance** — set up a **CI/CD pipeline** for continuous retraining, using both collected data and user feedback.  
-- **Feedback Loop** — allow everyday Vietnamese users and researchers to submit raw reports with labels for later review.  
-- **Scalability & Vision** — remain a research/demo tool, but may expand to other Vietnamese text sources (email, forums, URLs). Focus stays on Vietnamese only.
+- **Feature Engineering**: move to deep learning (e.g., PhoBERT) for better context understanding and fewer misclassifications.  
+- **External Services**: integrate **VirusTotal API** for URL reputation checks, extend explanations beyond rules.  
+- **Model Maintenance**: set up a **CI/CD pipeline** for continuous retraining, using both collected data and user feedback.  
+- **Feedback Loop**: allow everyday Vietnamese users and researchers to submit raw reports with labels for later review.  
+- **Scalability & Vision**: remain a research/demo tool, but may expand to other Vietnamese text sources (email, forums, URLs). Focus stays on Vietnamese only.
 
 ---
 
 ## Notes & Acknowledgements
 
-- **Project Purpose** — ScamRadar is built as a learning project and demo, not a production-ready system. Its main goal is to explore hybrid ML + rule-based approaches for Vietnamese scam detection.  
-- **Methodology** — The system combines the flexibility of machine learning with the precision of deterministic rules to capture real-world context that models alone might miss.
-- **For Future Extensions** — Anyone extending this project (e.g., adding new labels, languages, or moving toward production) should consider:
+- **Project Purpose**: ScamRadar is built as a learning project and demo, not a production-ready system. Its main goal is to explore hybrid ML + rule-based approaches for Vietnamese scam detection.  
+- **Methodology**: The system combines the flexibility of machine learning with the precision of deterministic rules to capture real-world context that models alone might miss.
+- **For Future Extensions**: Anyone extending this project (e.g., adding new labels, languages, or moving toward production) should consider:
   - Unit tests for business rules  
   - Evaluation datasets with challenging edge cases  
   - Monitoring for data/model drift over time  
