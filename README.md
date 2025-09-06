@@ -64,8 +64,8 @@ graph TD
   * If no rules apply, classification relies on SVM probability thresholds (example thresholds):
 
     * `> 0.85` → **⚠️ High risk**
-    * `> 0.65` → **🤔 Suspicious**
-    * `<= 0.65` → **✅ Likely safe**
+    * `> 0.60` → **🤔 Suspicious**
+    * `<= 0.60` → **✅ Likely safe**
 
 ---
 
