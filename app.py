@@ -1,8 +1,7 @@
 # ==============================================================================
-# SECTION 1: CÀI ĐẶT VÀ KHAI BÁO HẰNG SỐ
+# SECTION 1: SETUP
 # ==============================================================================
 
-# 1.1. Import các thư viện cần thiết
 import gradio as gr
 import joblib
 import pandas as pd
@@ -11,16 +10,15 @@ import os
 import traceback
 from urllib.parse import urlparse
 
-# 1.2. Tải mô hình SVM đã được huấn luyện
+# Tải mô hình SVM đã được huấn luyện
 try:
-    # Đường dẫn đến file model, tương đối so với vị trí file app.py
     svm_pipeline = joblib.load("models/svm_pipeline.pkl")
-    print("INFO: Tải mô hình SVM thành công.")
+    print("SUCCESS: Đã tải mô hình SVM thành công.")
 except FileNotFoundError:
-    print("LỖI: Không tìm thấy file 'models/svm_pipeline.pkl'. Ứng dụng sẽ không thể dự đoán.")
+    print("LỖI: Không tìm thấy file 'models/svm_pipeline.pkl'.")
     svm_pipeline = None
 
-# 1.3. Khai báo các danh sách từ khóa và tên miền
+# Khai báo các danh sách từ khóa và tên miền
 URL_SHORTENER_DOMAINS = [
     'bit.ly', 't.co', 'tinyurl.com', 'is.gd', 'soo.gd', 's.id', 'lnkd.in', 
     'db.tt', 'qr.ae', 'ow.ly', 'buff.ly', 'adf.ly', 'tr.im'
@@ -44,7 +42,7 @@ TRUSTED_ENTITIES = {
 TRUSTED_PHONE_NUMBERS = ['111', '113', '114', '115']
 
 # ==============================================================================
-# SECTION 2: CÁC HÀM HỖ TRỢ (HELPER FUNCTIONS)
+# SECTION 2: VIẾT HÀM XỬ LÝ INPUT
 # ==============================================================================
 
 def get_domain_from_url(url):
@@ -120,11 +118,10 @@ def generate_explanation(features, label, case_info):
     return f"{base} đề cập đến {', '.join(detected)}."
 
 # ==============================================================================
-# SECTION 3: HÀM DỰ ĐOÁN VÀ HÀM DỌN DẸP
+# SECTION 3: HÀM DỰ ĐOÁN
 # ==============================================================================
 
 def predict_text(message):
-    """Hàm chính, điều phối toàn bộ quá trình phân tích."""
     try:
         if svm_pipeline is None:
             raise ValueError("Mô hình SVM chưa được tải.")
@@ -162,10 +159,10 @@ def clear_all():
     return "", "", "", ""
 
 # ==============================================================================
-# SECTION 4: GIAO DIỆN NGƯỜI DÙNG (USER INTERFACE)
+# SECTION 4: GIAO DIỆN NGƯỜI DÙNG
 # ==============================================================================
 
-# <<< CẬP NHẬT: Giao diện được đơn giản hóa để tải nhanh và ổn định hơn >>>
+# UPDATE: Giao diện được đơn giản hóa để tải nhanh và ổn định hơn
 
 with gr.Blocks(theme='soft') as demo:
     gr.Markdown(
